@@ -1,17 +1,16 @@
-import React, { useEffect, useState } from 'react'
-import axios from 'axios'
+import React, { useEffect } from 'react'
+import { connect } from 'react-redux';
 
-import {baseUrl} from '../config'
+import { fetchPosts } from '../redux/actions/postActions'
 
-export default function Posts() {
-    const [posts, setPosts] = useState([]);
+function Posts({ posts, newPost, fetchPosts }) {
+    useEffect(fetchPosts, []);
 
     useEffect(() => {
-        axios.get(`${baseUrl}/posts?_limit=10`)
-            .then((res) => {
-                setPosts(res.data);
-            })
-    }, [])
+        if(newPost){
+            posts.unshift(newPost);
+        }
+    }, [posts, newPost]);
 
     return (
         <div>
@@ -27,3 +26,10 @@ export default function Posts() {
         </div>
     )
 }
+
+const mapStateToProps = state => ({
+    posts: state.posts.posts,
+    newPost: state.posts.post
+})
+
+export default connect(mapStateToProps, { fetchPosts })(Posts);

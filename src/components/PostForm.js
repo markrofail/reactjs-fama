@@ -1,28 +1,31 @@
 import React, { useState } from 'react'
-import axios from 'axios'
 
-import {baseUrl} from '../config'
+import { connect } from 'react-redux'
 
-export default function PostForm() {
+import { createPost } from '../redux/actions/postActions'
+
+function PostForm({ createPost }) {
     const [title, setTitle] = useState('')
     const [body, setBody] = useState('')
 
-    const createPost = () => {
+    const handleSubmit = (e) => {
+        e.preventDefault();
+
         const post = {
             'title': title,
             'body': body
-        }
+        };
 
-        axios.post(`${baseUrl}/posts/`, post)
-            .then(res => {
-                console.log(res.data);
-            })
+        createPost(post);
+
+        setBody('');
+        setTitle('');
     }
 
     return (
         <div>
             <h1>Add any post</h1>
-            <form onSubmit={createPost}>
+            <form onSubmit={e => handleSubmit(e)}>
                 <div>
                     <label>Title: </label><br />
                     <input type="text" name="title" value={title} onChange={e => setTitle(e.target.value)} />
@@ -38,3 +41,5 @@ export default function PostForm() {
         </div>
     )
 }
+
+export default connect(null, { createPost })(PostForm)
